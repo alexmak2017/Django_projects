@@ -11,3 +11,13 @@ class Publication(models.Model):
     image = models.FileField(upload_to=get_file_path)
     author = models.ForeignKey(User)
     added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '%s %s' % (self.author, self.added.strftime('%d-%m-%Y'))
+
+    def get_likes_count(self):
+        return PublicationLike.objects.filter(publications=self).count()
+
+class PublicationLike(models.Model):
+    publications = models.ForeignKey(Publication)
+    user = models.ForeignKey(User)

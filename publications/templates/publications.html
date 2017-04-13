@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% load humanize %}
+{% load custom_publication %}
+
 {% block content %}
     <form action="{% url 'publications' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -7,11 +10,31 @@
         <input type="submit">
     </form>
     <p>Publications:</p>
+
     {% for publication in publications %}
-        {{ publication.title }} <br>
-        {{ publication.body }} <br>
-        {{ publication.image.url }} <br>
-        {{ publication.added }} <br>
-        {{ publication.author.first_name }} <br>
+        <a href="{% url 'single_publication' publication_id=publication.id %}">{{ publication.title }}</a> <br>
+        {{ publication.body | safe}} <br>
+        {{ publication.image.url | safe }} <br>
+        {{ publication.added | naturaltime }} <br>
+        {{ publication.added | custom_datetime }} <br>
+        {{ publication.author.first_name}} <br>
+
     {% endfor %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if publications.has_previous %}
+                    <a href="?page={{ publications.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ publications.number }} of {{ publications.paginator.num_pages }}.
+                </span>
+
+                {% if publications.has_next %}
+                    <a href="?page={{ publications.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+
+
 {% endblock content %}
